@@ -1,52 +1,36 @@
-# a. IMPORTING NECESSARY PACKAGES
 import tensorflow as tf
 from tensorflow import keras
 import matplotlib.pyplot as plt
 import random
-
-# b. LOAD THE TRAINING AND TESTING DATA (MNIST)
+# Load the MNIST dataset
 mnist = tf.keras.datasets.mnist
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
-
-# Visualizing the first image in the dataset
-plt.matshow(x_train[1])  # Corrected typo
-plt.imshow(x_train[0], cmap="gray")
-
-# Normalizing the data
+# Normalize the data
 x_train = x_train / 255.0
 x_test = x_test / 255.0
-
-# c. DEFINE THE NETWORK ARCHITECTURE USING KERAS
+# Define the network architecture using Keras
 model = keras.Sequential([
-    keras.layers.Flatten(input_shape=(28, 28)),
-    keras.layers.Dense(128, activation="relu"),
-    keras.layers.Dense(10, activation="softmax")
+ keras.layers.Flatten(input_shape=(28, 28)),
+ keras.layers.Dense(128, activation="relu"),
+ keras.layers.Dense(10, activation="softmax")
 ])
-
 model.summary()
-
-# d. TRAIN THE MODEL USING SGD
-model.compile(optimizer="sgd",
-              loss="sparse_categorical_crossentropy",
-              metrics=['accuracy'])
-
+# Compile the model
+model.compile(optimizer="sgd", loss="sparse_categorical_crossentropy", metrics=['accuracy'])
+# Train the model
 history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=10)
-
-# e. EVALUATE THE NETWORK
+# Evaluate the model
 test_loss, test_acc = model.evaluate(x_test, y_test)
-print("Loss=%.3f" % test_loss)
-print("Accuracy=%.3f" % test_acc)
-
-# Display a random image from the test set and its prediction
-n = random.randint(0, 9999)
-plt.imshow(x_test[n], cmap="gray")
+print("Loss = %.3f" % test_loss)
+print("Accuracy = %.3f" % test_acc)
+# Choose a random image from the test set
+n = random.randint(0, len(x_test) - 1)
+plt.imshow(x_test[n], cmap='gray')
 plt.show()
-
-predicted_value = model.predict(x_test)
-print(predicted_value[n])
-
-# f. PLOT THE TRAINING LOSS AND ACCURACY
-# Plotting The Training Accuracy
+# Predict the label for the chosen image
+predicted_value = model.predict(x_test[n].reshape(1, 28, 28))
+print("Predicted Value:", predicted_value.argmax())
+# Plot training history - accuracy
 plt.plot(history.history['accuracy'])
 plt.plot(history.history['val_accuracy'])
 plt.title('Model Accuracy')
@@ -54,8 +38,7 @@ plt.ylabel('Accuracy')
 plt.xlabel('Epoch')
 plt.legend(['Train', 'Validation'], loc='upper left')
 plt.show()
-
-# Plotting The Training Loss
+# Plot training history - loss
 plt.plot(history.history['loss'])
 plt.plot(history.history['val_loss'])
 plt.title('Model Loss')
